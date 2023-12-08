@@ -683,6 +683,7 @@ clientmessage(XEvent *e)
 
 			// seturgent(c, 1);
 			// Automatically focus the urgent workspace
+			// https://dwm.suckless.org/patches/focusurgent/
 			int i = 0;
 
 			// Finds the index matching the urgent tag associated with the window c.
@@ -2694,6 +2695,7 @@ new_tag(const Arg *arg) {
 
 }
 
+// https://bbs.archlinux.org/viewtopic.php?pid=817499#p817499
 void
 cycle_layout(const Arg *arg) {
     Layout *l;
