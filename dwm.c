@@ -677,8 +677,21 @@ clientmessage(XEvent *e)
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
-		if (c != selmon->sel && !c->isurgent)
-			seturgent(c, 1);
+		if (c != selmon->sel && !c->isurgent) {
+
+			// seturgent(c, 1);
+			// Automatically focus the urgent workspace
+			int i = 0;
+
+			// Finds the index matching the urgent tag associated with the window c.
+			while (i < LENGTH(tags) && !((1 << i) & c->tags))
+    			i++;
+
+ 			// Set the view to that tag and focus on the urgent window c.
+			const Arg a = {.ui = 1 << i};
+			view(&a);
+			focus(c);
+		}
 	}
 }
 
@@ -1825,7 +1838,7 @@ setup(void)
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	lrpad = drw->fonts->h;
-	bh = drw->fonts->h + 2;
+	bh = drw->fonts->h + 3;
 	updategeom();
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -2683,4 +2696,3 @@ main(int argc, char *argv[])
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
-
