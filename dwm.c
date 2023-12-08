@@ -291,6 +291,7 @@ static Client *swallowingclient(Window w);
 static Client *termforwin(const Client *c);
 static pid_t winpid(Window w);
 
+static void new_workspace(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -2665,6 +2666,31 @@ load_xresources(void)
 	for (p = resources; p < resources + LENGTH(resources); p++)
 		resource_load(db, p->name, p->type, p->dst);
 	XCloseDisplay(display);
+}
+
+void
+new_workspace(const Arg *arg) {
+    int maxTag = 0;
+
+    for (Client *c = selmon->clients; c; c = c->next) {
+        for (int i = 0; i < LENGTH(tags); i++) {
+            if ((1 << i) & c->tags) {
+                if (i > maxTag) {
+                    maxTag = i;
+                }
+            }
+        }
+    }
+	
+    // Create a new tag adjacent to the highest existing tag
+    if (maxTag < LENGTH(tags) - 1) {
+        const Arg a = {.ui = 1 << (maxTag + 1)};
+        view(&a);
+    }
+	// Spawn a terminal
+	const Arg a = {.v = termcmd};
+	spawn(&a);
+
 }
 
 int
