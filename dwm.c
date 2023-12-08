@@ -291,7 +291,8 @@ static Client *swallowingclient(Window w);
 static Client *termforwin(const Client *c);
 static pid_t winpid(Window w);
 
-static void new_workspace(const Arg *arg);
+static void new_tag(const Arg *arg);
+static void cycle_layout(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -2669,7 +2670,7 @@ load_xresources(void)
 }
 
 void
-new_workspace(const Arg *arg) {
+new_tag(const Arg *arg) {
     int maxTag = 0;
 
     for (Client *c = selmon->clients; c; c = c->next) {
@@ -2691,6 +2692,16 @@ new_workspace(const Arg *arg) {
 	const Arg a = {.v = termcmd};
 	spawn(&a);
 
+}
+
+void
+cycle_layout(const Arg *arg) {
+    Layout *l;
+    for (l=(Layout *)layouts;l != selmon->lt[selmon->sellt];l++);
+    if (l->symbol && (l + 1)->symbol)
+        setlayout(&((Arg) { .v = (l + 1) }));
+    else
+        setlayout(&((Arg) { .v = layouts }));
 }
 
 int
