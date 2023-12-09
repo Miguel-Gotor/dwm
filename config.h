@@ -4,6 +4,7 @@
 #define TERMINAL "st"
 #define TERMCLASS "St"
 #define BROWSER "firefox"
+#define FILEMANAGER "pcmanfm"
 
 /* appearance */
 static unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -18,13 +19,14 @@ static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
 static char *fonts[]          = { "Iosevka Comfy:size=12:antialias=true:autohint=true:style=SemiBold", "FontAwesome:size=16:antialias=true:autohint=true"};
 // static char *fonts[]          = { "Sans:size=11:antialias=true:autohint=true", "FontAwesome:size=16:antialias=true:autohint=true" };
-static char normbgcolor[]           = "#000000";
+static char normbgcolor[]           = "#292031";
 static char normbordercolor[]       = "#444444";
 // static char normfgcolor[]           = "#bbbbbb";
 static char normfgcolor[]           = "#999999";
 static char selfgcolor[]            = "#eeeeee";
 static char selbordercolor[]        = "#000077";
-static char selbgcolor[]            = "#000000";
+static char selbgcolor[]            = "#483752";
+
 static char *colors[][3] = {
        /*               fg           bg           border   */
        [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
@@ -45,7 +47,9 @@ static Sp scratchpads[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+/* static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };*/
+// static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "9", "", ""};
+static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "9", "", "", ""};
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -92,15 +96,17 @@ static const Layout layouts[] = {
 
 	// { "[M]",	monocle },		/* All windows on top of eachother */
 	// { "",	monocle },		/* All windows on top of eachother */
-	{ "",	monocle },		/* All windows on top of eachother */
-	// { "",	monocle },		/* All windows on top of eachother */
+	// { "",	monocle },		/* All windows on top of eachother */
+	{ "",	monocle },		/* All windows on top of eachother */
 
-	{ "[]",	centeredmaster },		/* Master in middle, slaves on sides */
-	// { "[]",	centeredmaster },		/* Master in middle, slaves on sides */
+	// { "[]",	centeredmaster },		/* Master in middle, slaves on sides */
+	{ "[]",	centeredmaster },		/* Master in middle, slaves on sides */
 
-	{ ">M>",	centeredfloatingmaster },	/* Same but master floats */
+	// { ">M>",	centeredfloatingmaster },	/* Same but master floats */
+	{ "",	centeredfloatingmaster },	/* Same but master floats */
 
-	{ "",	NULL },			/* no layout function means floating behavior */
+	// { "",	NULL },			/* no layout function means floating behavior */
+	{ "",	NULL },			/* no layout function means floating behavior */
 	{ NULL,		NULL },
 };
 
@@ -170,20 +176,39 @@ static const Key keys[] = {
 	TAGKEYS(				XK_7,		6)
 	TAGKEYS(				XK_8,		7)
 	TAGKEYS(				XK_9,		8)
+	/* Custom tags*/
+	TAGKEYS(				XK_f,		9)
+	TAGKEYS(				XK_b,		10)
+	TAGKEYS(				XK_v,		11)
+	// TAGKEYS(				XK_y,		11)
+	// TAGKEYS(				XK_s,		12)
 	{ MODKEY,				XK_0,		view,		{.ui = ~0 } },
 	{ MODKEY|ShiftMask,		XK_0,		tag,		{.ui = ~0 } },
 
 	// Reload DWM like i3wm. (Assuming there is a single DWM instance)
-	{ MODKEY|ShiftMask,		XK_r,		spawn,		SHCMD("kill -HUP $(pgrep dwm)") },
-	{ MODKEY|ShiftMask,		XK_w,		spawn,		SHCMD(" find ~/Pictures/Wallpapers -type f | shuf | sxiv - -t") },
+	
+	// { MODKEY|ShiftMask,		XK_r,		spawn,		SHCMD("kill -HUP $(pgrep dwm)") },
+	// { MODKEY|ShiftMask,		XK_r,		spawn,		SHCMD("kill -HUP $(pidof dwm)") },
+	{ MODKEY|ShiftMask,		XK_r,		sighup},
+
+	{ MODKEY|ShiftMask,		XK_e,		spawn,			{.v = (const char*[]){ "exit-dwm", NULL } } },
+
+	{ MODKEY|ShiftMask,		XK_w,		spawn,		SHCMD("find ~/Pictures/Wallpapers -type f | shuf | sxiv - -t") },
 
 	// Focus current media player
 	{ MODKEY,		XK_p,		spawn,		SHCMD("dbus-send --type=method_call --dest=org.mpris.MediaPlayer2.playerctld /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Raise") },
 
-	// { MODKEY|ShiftMask,		XK_r,		spawn,		SHCMD("kill -HUP $(pidof dwm)") },
 	{ MODKEY,				XK_Tab,		view,		{0} },
 	{ MODKEY,				XK_q,		killclient,	{0} },
-	{ MODKEY,				XK_b,		spawn,		{.v = (const char*[]){ BROWSER, NULL } } },
+
+	/* { MODKEY,				XK_b,		spawn,		{.v = (const char*[]){ BROWSER, NULL } } }, */
+	/* { MODKEY,				XK_v,		spawn,		{.v = (const char*[]){ "kitty", "-e", "cava", NULL } } }, */
+	/* { MODKEY,				XK_f,		spawn,		{.v = (const char*[]){ FILEMANAGER, NULL } } }, */
+
+	/* In case you're sure you don't need more than one instance of each*/
+	{ MODKEY,				XK_b,		spawn,		SHCMD("pgrep $BROWSER || $BROWSER") },
+	{ MODKEY,				XK_f,		spawn,		SHCMD("pgrep pcmanfm || pcmanfm") },
+	{ MODKEY,				XK_v,		spawn,		SHCMD("pgrep kitty || kitty -e cava") },
 
 	// { MODKEY,			XK_minus,	spawn,		SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)") },
 	// { MODKEY,			XK_minus,	spawn,		SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)") },
@@ -204,7 +229,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_t,		cycle_layout,	{0} }, /* bstack */
 
 	// { MODKEY,				XK_t,		setlayout,	{.v = &layouts[0]} }, /* tile */
-	// { MODKEY|ShiftMask,		XK_t,		setlayout,	{.v = &layouts[1]} }, /* bstack */
+	// { MODKEY|ShiftMask,		XK_t,		setlayout,	{.v = &layouts[1]} }, /* bstack */c
 	// { MODKEY,				XK_y,		setlayout,	{.v = &layouts[2]} }, /* spiral */
 	// { MODKEY|ShiftMask,		XK_y,		setlayout,	{.v = &layouts[3]} }, /* dwindle */
 	// { MODKEY,				XK_u,		setlayout,	{.v = &layouts[4]} }, /* deck */
@@ -233,22 +258,27 @@ static const Key keys[] = {
 	// { MODKEY,				XK_d,		spawn,     	SHCMD( "dmenu_run -i -b -fn 'Dejavu Sans Book:size=11' -nb '#00001F' -nf '#FFFFFF' -sb '#FFFFFF' -sf '#000000'") },
 
 	{ MODKEY|ShiftMask,		XK_s,		spawn,			{.v = (const char*[]){ "area-screenshot", NULL } } },
+	{ MODKEY|ShiftMask,		XK_x,		spawn,			{.v = (const char*[]){ "dmenu-kill", NULL } } },
 
 	{ MODKEY,				XK_d,		spawn,          {.v = (const char*[]){ 
 	"dmenu_run",
 	"-p",
-	"Run which program?",
+	"Run which program? ❱",
+	// "Run which program? ➔",
 	// "-b", 
 	"-fn",
 	// "Dejavu Sans Book:size=11",
 	"Iosevka Comfy:size=12:antialias=true:autohint=true:style=SemiBold",
 	"-nb",
-	// "#00001F",
-	"#000000",
+	// "#000055",
+	// "#000000",
+	"#00002F",
 	"-nf",
 	"#999999",
 	"-sb",
-	"#000000",
+	"#000055",
+	// "#000000",
+	// "#00002F",
 	"-sf",
 	"#FFFFFF",
 	NULL } } },
@@ -301,11 +331,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_Page_Up,	shifttag,	{ .i = -1 } },
 	{ MODKEY,			XK_Page_Down,	shiftview,	{ .i = +1 } },
 	{ MODKEY|ShiftMask,		XK_Page_Down,	shifttag,	{ .i = +1 } },
-	// { MODKEY,			XK_Insert,	spawn,		SHCMD("xdotool type $(grep -v '^#' ~/.local/share/larbs/snippets | dmenu -i -l 50 | cut -d' ' -f1)") },
 
-	// { MODKEY,			XK_F1,		spawn,		SHCMD("groff -mom /usr/local/share/dwm/larbs.mom -Tpdf | zathura -") },
-	// { MODKEY,			XK_F2,		spawn,		{.v = (const char*[]){ "tutorialvids", NULL } } },
-	// { MODKEY,			XK_F3,		spawn,		{.v = (const char*[]){ "displayselect", NULL } } },
 	// { MODKEY,			XK_F4,		spawn,		SHCMD(TERMINAL " -e pulsemixer; kill -44 $(pidof dwmblocks)") },
 	// { MODKEY,			XK_F5,		xrdb,		{.v = NULL } },
 	// { MODKEY,			XK_F6,		spawn,		{.v = (const char*[]){ "torwrap", NULL } } },
@@ -317,17 +343,17 @@ static const Key keys[] = {
 	// { MODKEY,			XK_F12,		spawn,		SHCMD("remaps") },
 
 	// { MODKEY,			XK_space,	zoom,		{0} },
-	{ MODKEY,				XK_space,	spawn,		{.v = (const char*[]){ "mpris-play-pause", NULL } } },
-	{ MODKEY,				XK_minus,	spawn,		{.v = (const char*[]){ "notify-metadata", NULL } } },
-	{ MODKEY,				XK_period,	spawn,		{.v = (const char*[]){ "playerctl", "next", NULL } } },
-	{ MODKEY,				XK_comma,	spawn,		{.v = (const char*[]){ "playerctl", "previous", NULL } } },
-	{ MODKEY,				XK_c,		spawn,		{.v = (const char*[]){ "notify-calendar", NULL } } },
-	{ 0,					XK_Print,	spawn,		{.v = (const char*[]){ "full-screenshot", NULL } } },
+	{ MODKEY,				XK_space,	spawn,			{.v = (const char*[]){ "mpris-play-pause", NULL } } },
+	{ MODKEY,				XK_minus,	spawn,			{.v = (const char*[]){ "notify-metadata", NULL } } },
+	{ MODKEY,				XK_KP_Add,	spawn,			{.v = (const char*[]){ "change-volume", "-1", NULL } } },
+	{ MODKEY,				XK_KP_Subtract,	spawn,		{.v = (const char*[]){ "change-volume", "+1", NULL } } },
+	{ MODKEY,				XK_period,	spawn,			{.v = (const char*[]){ "playerctl", "next", NULL } } },
+	{ MODKEY,				XK_comma,	spawn,			{.v = (const char*[]){ "playerctl", "previous", NULL } } },
+	{ MODKEY,				XK_c,		spawn,			{.v = (const char*[]){ "notify-calendar", NULL } } },
+	// { MODKEY,				XK_y,		spawn,			{.v = (const char*[]){ BROWSER, "--new-window", "https://www.youtube.com/", NULL } } },
+	{ MODKEY,				XK_m,		spawn,			{.v = (const char*[]){ "mute-audio", NULL } } },
+	{ 0,					XK_Print,	spawn,			{.v = (const char*[]){ "full-screenshot", NULL } } },
 
-	// { 0,				XK_Print,	spawn,		SHCMD("maim pic-full-$(date '+%y%m%d-%H%M-%S').png") },
-	// { ShiftMask,			XK_Print,	spawn,		{.v = (const char*[]){ "maimpick", NULL } } },
-
-	// { MODKEY,			XK_Print,	spawn,		{.v = (const char*[]){ "dmenurecord", NULL } } },
 
 	// { MODKEY|ShiftMask,		XK_Print,	spawn,		{.v = (const char*[]){ "dmenurecord", "kill", NULL } } },
 	// { MODKEY,			XK_Delete,	spawn,		{.v = (const char*[]){ "dmenurecord", "kill", NULL } } },
@@ -393,7 +419,7 @@ static const Button buttons[] = {
 	{ ClkStatusText,        0,              Button5,        sigdwmblocks,   {.i = 5} },
 	{ ClkStatusText,        ShiftMask,      Button1,        sigdwmblocks,   {.i = 6} },
 #endif
-	{ ClkStatusText,        ShiftMask,      Button3,        spawn,          SHCMD(TERMINAL " -e nvim ~/.local/src/dwmblocks/config.h") },
+	// { ClkStatusText,        ShiftMask,      Button3,        spawn,          SHCMD(TERMINAL " -e nvim ~/.local/src/dwmblocks/config.h") },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        defaultgaps,	{0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
