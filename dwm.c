@@ -2670,30 +2670,37 @@ load_xresources(void)
 	XCloseDisplay(display);
 }
 
-// Open a new workspace and immediately switch to it in a browser tab style
+// Create a new tag and immediately switch to it, similar to opening a new tab in a browser.
 void
 new_tag(const Arg *arg) {
-    int maxTag = 0;
+    int emptyTag = -1;
 
-    for (Client *c = selmon->clients; c; c = c->next) {
-        for (int i = 0; i < LENGTH(tags); i++) {
+    // Check if any tags are empty
+    for (int i = 0; i < LENGTH(tags); i++) {
+        int tagOccupied = 0;
+
+		// Loop through clients to check tag occupancy
+        for (Client *c = selmon->clients; c; c = c->next) {
+		// Check if the current tag (i) is occupied by any client
             if ((1 << i) & c->tags) {
-                if (i > maxTag) {
-                    maxTag = i;
-                }
+                tagOccupied = 1;
+                break;
             }
         }
+        if (!tagOccupied) {
+            emptyTag = i;
+            break;
+        }
     }
-	
-    // Create a new tag adjacent to the highest existing tag
-    if (maxTag < LENGTH(tags) - 1) {
-        const Arg a = {.ui = 1 << (maxTag + 1)};
-        view(&a);
-    }
-	// Spawn a terminal
-	const Arg a = {.v = termcmd};
-	spawn(&a);
 
+    // If an empty tag is found, use it for the new workspace
+    if (emptyTag != -1) {
+        const Arg a = {.ui = 1 << emptyTag};
+        view(&a);
+			// Spawn a terminal
+		const Arg b = {.v = termcmd};
+		spawn(&b);
+    }
 }
 
 // https://bbs.archlinux.org/viewtopic.php?pid=817499#p817499
