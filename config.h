@@ -47,7 +47,7 @@ static Sp scratchpads[] = {
 };
 
 /* tagging */
-/* static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };*/
+// static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 // static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "9", "", ""};
 static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "9", "", "", ""};
 
@@ -209,6 +209,7 @@ static const Key keys[] = {
 	{ MODKEY,				XK_b,		spawn,		SHCMD("pgrep $BROWSER || $BROWSER") },
 	{ MODKEY,				XK_f,		spawn,		SHCMD("pgrep pcmanfm || pcmanfm") },
 	{ MODKEY,				XK_v,		spawn,		SHCMD("pgrep kitty || kitty -e cava") },
+	{ MODKEY,				XK_x,		spawn,		SHCMD("(pgrep xkill && pkill xkill) || xkill") },
 
 	// { MODKEY,			XK_minus,	spawn,		SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)") },
 	// { MODKEY,			XK_minus,	spawn,		SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)") },
@@ -304,10 +305,9 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_apostrophe,	togglesmartgaps,	{0} },
 	{ MODKEY,			XK_Return,	spawn,		{.v = termcmd } },
 
-	{ MODKEY,			XK_z,		incrgaps,	{.i = +3 } },
-	/* { MODKEY|ShiftMask,		XK_z,		spawn,		SHCMD("") }, */
-	{ MODKEY,			XK_x,		incrgaps,	{.i = -3 } },
-	/* { MODKEY|ShiftMask,		XK_x,		spawn,		SHCMD("") }, */
+	{ MODKEY,			XK_plus,		incrgaps,	{.i = +3 } },
+	{ MODKEY,			XK_dead_grave,		incrgaps,	{.i = -3 } },
+	
 	// { MODKEY,			XK_c,		spawn,		{.v = (const char*[]){ TERMINAL, "-e", "profanity", NULL } } },
 	/* { MODKEY|ShiftMask,		XK_c,		spawn,		SHCMD("") }, */
 	/* V is automatically bound above in STACKKEYS */
@@ -322,14 +322,14 @@ static const Key keys[] = {
 	// { MODKEY,			XK_period,	spawn,		{.v = (const char*[]){ "mpc", "next", NULL } } },
 	// { MODKEY|ShiftMask,		XK_period,	spawn,		{.v = (const char*[]){ "mpc", "repeat", NULL } } },
 
-	{ MODKEY,			XK_Left,	focusmon,	{.i = -1 } },
-	{ MODKEY|ShiftMask,		XK_Left,	tagmon,		{.i = -1 } },
-	{ MODKEY,			XK_Right,	focusmon,	{.i = +1 } },
-	{ MODKEY|ShiftMask,		XK_Right,	tagmon,		{.i = +1 } },
+	{ MODKEY,				XK_Left,		focusmon,	{.i = -1 } },
+	{ MODKEY|ShiftMask,		XK_Left,		tagmon,		{.i = -1 } },
+	{ MODKEY,				XK_Right,		focusmon,	{.i = +1 } },
+	{ MODKEY|ShiftMask,		XK_Right,		tagmon,		{.i = +1 } },
 
-	{ MODKEY,			XK_Page_Up,	shiftview,	{ .i = -1 } },
-	{ MODKEY|ShiftMask,		XK_Page_Up,	shifttag,	{ .i = -1 } },
-	{ MODKEY,			XK_Page_Down,	shiftview,	{ .i = +1 } },
+	{ MODKEY,				XK_Page_Up,		shiftview,	{ .i = -1 } },
+	{ MODKEY|ShiftMask,		XK_Page_Up,		shifttag,	{ .i = -1 } },
+	{ MODKEY,				XK_Page_Down,	shiftview,	{ .i = +1 } },
 	{ MODKEY|ShiftMask,		XK_Page_Down,	shifttag,	{ .i = +1 } },
 
 	// { MODKEY,			XK_F4,		spawn,		SHCMD(TERMINAL " -e pulsemixer; kill -44 $(pidof dwmblocks)") },
@@ -342,17 +342,17 @@ static const Key keys[] = {
 	// { MODKEY,			XK_F11,		spawn,		SHCMD("mpv --untimed --no-cache --no-osc --no-input-default-bindings --profile=low-latency --input-conf=/dev/null --title=webcam $(ls /dev/video[0,2,4,6,8] | tail -n 1)") },
 	// { MODKEY,			XK_F12,		spawn,		SHCMD("remaps") },
 
-	// { MODKEY,			XK_space,	zoom,		{0} },
-	{ MODKEY,				XK_space,	spawn,			{.v = (const char*[]){ "mpris-play-pause", NULL } } },
-	{ MODKEY,				XK_minus,	spawn,			{.v = (const char*[]){ "notify-metadata", NULL } } },
-	{ MODKEY,				XK_KP_Add,	spawn,			{.v = (const char*[]){ "change-volume", "-1", NULL } } },
-	{ MODKEY,				XK_KP_Subtract,	spawn,		{.v = (const char*[]){ "change-volume", "+1", NULL } } },
-	{ MODKEY,				XK_period,	spawn,			{.v = (const char*[]){ "playerctl", "next", NULL } } },
-	{ MODKEY,				XK_comma,	spawn,			{.v = (const char*[]){ "playerctl", "previous", NULL } } },
-	{ MODKEY,				XK_c,		spawn,			{.v = (const char*[]){ "notify-calendar", NULL } } },
-	// { MODKEY,				XK_y,		spawn,			{.v = (const char*[]){ BROWSER, "--new-window", "https://www.youtube.com/", NULL } } },
-	{ MODKEY,				XK_m,		spawn,			{.v = (const char*[]){ "mute-audio", NULL } } },
-	{ 0,					XK_Print,	spawn,			{.v = (const char*[]){ "full-screenshot", NULL } } },
+	{ MODKEY|ShiftMask,		XK_space,	zoom,		{0} },
+	{ MODKEY,				XK_space,	spawn,		{.v = (const char*[]){ "mpris-play-pause", NULL } } },
+	{ MODKEY,				XK_minus,	spawn,		{.v = (const char*[]){ "notify-metadata", NULL } } },
+	{ MODKEY,				XK_KP_Add,	spawn,		{.v = (const char*[]){ "change-volume", "-1", NULL } } },
+	{ MODKEY,				XK_KP_Subtract,	spawn,	{.v = (const char*[]){ "change-volume", "+1", NULL } } },
+	{ MODKEY,				XK_period,	spawn,		{.v = (const char*[]){ "playerctl", "next", NULL } } },
+	{ MODKEY,				XK_comma,	spawn,		{.v = (const char*[]){ "playerctl", "previous", NULL } } },
+	{ MODKEY,				XK_c,		spawn,		{.v = (const char*[]){ "notify-calendar", NULL } } },
+	// { MODKEY,				XK_y,		spawn,	{.v = (const char*[]){ BROWSER, "--new-window", "https://www.youtube.com/", NULL } } },
+	{ MODKEY,				XK_m,		spawn,		{.v = (const char*[]){ "mute-audio", NULL } } },
+	{ 0,					XK_Print,	spawn,		{.v = (const char*[]){ "full-screenshot", NULL } } },
 
 
 	// { MODKEY|ShiftMask,		XK_Print,	spawn,		{.v = (const char*[]){ "dmenurecord", "kill", NULL } } },
