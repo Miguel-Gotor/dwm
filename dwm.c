@@ -682,18 +682,9 @@ clientmessage(XEvent *e)
 		if (c != selmon->sel && !c->isurgent) {
 
 			// seturgent(c, 1);
-			// Automatically focus the urgent workspace
-			// https://dwm.suckless.org/patches/focusurgent/
-			int i = 0;
-
-			// Finds the index matching the urgent tag associated with the window c.
-			while (i < LENGTH(tags) && !((1 << i) & c->tags))
-    			i++;
-
- 			// Set the view to that tag and focus on the urgent window c.
-			const Arg a = {.ui = 1 << i};
+ 			/* Directly view the urgent tag instead */
+			const Arg a = {.ui = c->tags};
 			view(&a);
-			focus(c);
 		}
 	}
 }
@@ -1852,6 +1843,7 @@ setup(void)
 	netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
 	netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
 	netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
+	// netatom[NetWMName] = XInternAtom(dpy, "WM_CLASS", False);
 	netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
 	netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
 	netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
@@ -1998,7 +1990,10 @@ tag(const Arg *arg)
 		c = selmon->sel;
 		selmon->sel->tags = arg->ui & TAGMASK;
 		setclienttagprop(c);
-		focus(NULL);
+
+		/* Automatically set the view to that tag */
+		const Arg a = {.ui = c->tags};
+		view(&a);
 		arrange(selmon);
 	}
 }
@@ -2375,6 +2370,7 @@ updatetitle(Client *c)
 {
 	if (!gettextprop(c->win, netatom[NetWMName], c->name, sizeof c->name))
 		gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
+		// gettextprop(c->win, XA_WM_CLASS, c->name, sizeof c->name);
 	if (c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, broken);
 }
@@ -2670,12 +2666,12 @@ load_xresources(void)
 	XCloseDisplay(display);
 }
 
-// Create a new tag and immediately switch to it, similar to opening a new tab in a browser.
+// Switch to the first tag with no windows in it
 void
 new_tag(const Arg *arg) {
     int emptyTag = -1;
 
-    // Check if any tags are empty
+	// Since there's a limited number of tags, make sure at least one's vacant
     for (int i = 0; i < LENGTH(tags); i++) {
         int tagOccupied = 0;
 
@@ -2693,11 +2689,11 @@ new_tag(const Arg *arg) {
         }
     }
 
-    // If an empty tag is found, use it for the new workspace
+    // If an empty tag is found, use it
     if (emptyTag != -1) {
         const Arg a = {.ui = 1 << emptyTag};
         view(&a);
-			// Spawn a terminal
+		// Spawn a terminal
 		const Arg b = {.v = termcmd};
 		spawn(&b);
     }
@@ -2708,7 +2704,8 @@ void
 cycle_layout(const Arg *arg) {
     Layout *l;
     for (l=(Layout *)layouts;l != selmon->lt[selmon->sellt];l++);
-    if (l->symbol && (l + 1)->symbol)
+	// Layouts name and symbol are NULL-terminated
+    if ((l + 1)->symbol)
         setlayout(&((Arg) { .v = (l + 1) }));
     else
         setlayout(&((Arg) { .v = layouts }));
