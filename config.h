@@ -182,6 +182,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_r,		sighup},
 
 	{ MODKEY|ShiftMask,		XK_e,		spawn,			{.v = (const char*[]){ "exit-dwm", NULL } } },
+	{ MODKEY|ShiftMask,		XK_t,		spawn,			{.v = (const char*[]){ "empty-trash", NULL } } },
 
 	{ MODKEY|ShiftMask,		XK_w,		spawn,		SHCMD("find ~/Pictures/Wallpapers -type f | shuf | sxiv - -t") },
 
@@ -217,7 +218,7 @@ static const Key keys[] = {
 	// { MODKEY,			XK_r,		spawn,		{.v = (const char*[]){ TERMINAL, "-e", "lfub", NULL } } },
 	// { MODKEY|ShiftMask,		XK_r,		spawn,		{.v = (const char*[]){ TERMINAL, "-e", "htop", NULL } } },
 
-	{ MODKEY|ShiftMask,		XK_t,		cycle_layout,	{0} }, /* bstack */
+	{ MODKEY|ShiftMask,		XK_c,		cycle_layout,	{0} },
 
 	// { MODKEY,				XK_t,		setlayout,	{.v = &layouts[0]} }, /* tile */
 	// { MODKEY|ShiftMask,		XK_t,		setlayout,	{.v = &layouts[1]} }, /* bstack */c
